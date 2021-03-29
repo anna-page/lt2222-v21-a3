@@ -24,7 +24,8 @@ def process_test_data(test_file):
 
 def character_vector(character, char_set):
     sub_array = np.zeros(len(char_set))
-    sub_array[char_set.index(character)] = 1
+    if character in char_set:
+        sub_array[char_set.index(character)] = 1
     return sub_array
 
 def create_test_data(all_chars, char_set):
@@ -32,16 +33,16 @@ def create_test_data(all_chars, char_set):
     vectors_list = []
     for idx in range(len(all_chars) - 4):
 
-        window_not_in_char_set = [
-            x not in char_set for x in [
-                all_chars[idx],
-                all_chars[idx + 1],
-                all_chars[idx + 3],
-                all_chars[idx + 4],
-            ]
-        ] 
+        # window_not_in_char_set = [
+        #     x not in char_set for x in [
+        #         all_chars[idx],
+        #         all_chars[idx + 1],
+        #         all_chars[idx + 3],
+        #         all_chars[idx + 4],
+        #     ]
+        # ] 
 
-        if (all_chars[idx + 2] not in vowels) or any(window_not_in_char_set):
+        if (all_chars[idx + 2] not in vowels):# or any(window_not_in_char_set):
             continue
 
         vowel_index = vowels.index(all_chars[idx + 2])
@@ -75,14 +76,15 @@ def write_output_data(test_file, output_file, predicted_vowels):
         original = f.read()
 
     original = list(original)
-
     pred_idx = 0
     for idx, char in enumerate(original):
-        if pred_idx < len(predicted_vowels):
+        # if pred_idx < len(predicted_vowels):
+        try:
             if char in vowels:
                 original[idx] = vowels[predicted_vowels[pred_idx]]
-            pred_idx +=1 
-            # import pdb; pdb.set_trace()
+                pred_idx +=1 
+        except IndexError: 
+            import pdb; pdb.set_trace()
 
     with open(output_file, "w") as f:
         f.write("".join(original))
